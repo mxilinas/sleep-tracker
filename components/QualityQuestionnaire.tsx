@@ -1,4 +1,5 @@
 import { Button, Text, Dimensions, StyleSheet, View } from 'react-native';
+import { useSleep } from './SleepContext';
 
 export enum SleepQuality {
     GOOD,
@@ -8,11 +9,9 @@ export enum SleepQuality {
 
 const { width, height } = Dimensions.get('window');
 
-type QuestionnaireProps = {
-    onSelect: (quality: SleepQuality) => void;
-}
+export function QualityQuestionnaire() {
 
-export function QualityQuestionnaire({ onSelect }: QuestionnaireProps) {
+    const { sleepData, setSleepData } = useSleep();
 
     if (styles == undefined) {
         console.error("Failed to create stylesheet!");
@@ -24,15 +23,24 @@ export function QualityQuestionnaire({ onSelect }: QuestionnaireProps) {
             <View style={styles.buttonContainer}>
                 <Button
                     title='Good'
-                    onPress={() => onSelect(SleepQuality.GOOD)}>
+                    onPress={() => setSleepData({
+                        ...sleepData,
+                        quality: SleepQuality.GOOD
+                    })}>
                 </Button>
                 <Button
                     title='Fair'
-                    onPress={() => onSelect(SleepQuality.FAIR)}>
+                    onPress={() => setSleepData({
+                        ...sleepData,
+                        quality: SleepQuality.FAIR
+                    })}>
                 </Button>
                 <Button
                     title='Poor'
-                    onPress={() => onSelect(SleepQuality.POOR)}>
+                    onPress={() => setSleepData({
+                        ...sleepData,
+                        quality: SleepQuality.POOR
+                    })}>
                 </Button>
             </View>
         </View>
