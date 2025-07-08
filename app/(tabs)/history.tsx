@@ -8,7 +8,7 @@ export default function SleepHistory() {
       <Text style={styles.title}>{getMonth()}, {getYear()}</Text>
       <View style={styles.historyGrid}>
         {Array.from({ length: getNumDaysOfCurrentMonth() }).map((_, i) => (
-          <HistoryTile key={i} calendarEntry={generateDummyEntry()} />
+          <HistoryTile key={i} calendarEntry={randInt(1, 9) === 1 ? null : generateDummyEntry()} text={`${i + 1}`} />
         ))}
       </View>
     </View>

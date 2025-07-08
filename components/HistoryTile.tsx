@@ -33,10 +33,11 @@ export interface TimeRange {
 }
 // =======================  TODO: Replace with actual object type (end)
 
-export default function HistoryTile({ calendarEntry }: { calendarEntry: CalendarEntry | null }) {
+export default function HistoryTile({ calendarEntry, text }: { calendarEntry: CalendarEntry | null, text: string }) {
   if (calendarEntry === null) {
     return (
       <View style={styles.emptyTile}>
+        <Text style={styles.dayText}>{text}</Text>
       </View>
     )
   }
@@ -44,9 +45,8 @@ export default function HistoryTile({ calendarEntry }: { calendarEntry: Calendar
     <View style={
       calendarEntry.sleepQuality == SleepQuality.POOR ? styles.poorTile
         : (calendarEntry.sleepQuality == SleepQuality.FAIR ? styles.fairTile
-          : styles.goodTile)
-    }
-    >
+          : styles.goodTile)}>
+      <Text style={styles.dayText}>{text}</Text>
     </View>
   )
 }
@@ -74,7 +74,7 @@ const baseTileHover: ViewStyle = {
 const styles = StyleSheet.create({
   goodTile: {
     ...baseTile,
-    backgroundColor: '#8A9A8A',
+    backgroundColor: '#7CB342',
   },
   fairTile: {
     ...baseTile,
@@ -86,6 +86,11 @@ const styles = StyleSheet.create({
   },
   emptyTile: {
     ...baseTile,
-    backgroundColor: '#a5a4a5',
+    backgroundColor: '#9DA8AF',
+  },
+  dayText: {
+    color: '#ffffff',
+    fontWeight: 'bold',
+    paddingHorizontal: 4,
   }
 })
