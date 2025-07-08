@@ -1,0 +1,91 @@
+import { Dimensions, StyleSheet, ViewStyle } from "react-native"
+import { Text, View } from "./Themed"
+
+// =======================  TODO: Replace with actual object type (start)
+export interface CalendarEntry {
+  sleepQuality: SleepQuality,
+  // timeVolume: TimeVolumeSeries, NOTE: may later implement
+  sleepTimeRange: TimeRange,
+  notes: string
+}
+
+export enum SleepQuality {
+  POOR,
+  FAIR,
+  GOOD,
+}
+
+export interface TimeVolumeSeries {
+  series: Array<{ time: Time, volume: Decibel }>
+}
+
+/// Time should be given in 24-hour format
+export interface Time {
+  hour: number,
+  minute: number,
+  second: number,
+}
+export type Decibel = number
+
+export interface TimeRange {
+  startTime: Time,
+  endTime: Time,
+}
+// =======================  TODO: Replace with actual object type (end)
+
+export default function HistoryTile({ calendarEntry }: { calendarEntry: CalendarEntry | null }) {
+  if (calendarEntry === null) {
+    return (
+      <View style={styles.emptyTile}>
+      </View>
+    )
+  }
+  return (
+    <View style={
+      calendarEntry.sleepQuality == SleepQuality.POOR ? styles.poorTile
+        : (calendarEntry.sleepQuality == SleepQuality.FAIR ? styles.fairTile
+          : styles.goodTile)
+    }
+    >
+    </View>
+  )
+}
+
+const screenWidth = Dimensions.get('screen').width;
+const TILE_MARGIN = 4;
+const NUM_COLUMNS = 7;
+const TOTAL_GAP = TILE_MARGIN * 2 * NUM_COLUMNS;
+const SCREEN_WIDTH_OFFSET = (screenWidth / NUM_COLUMNS) % 2; // The value to subtract to remove the fractional component
+const TILE_WIDTH = (screenWidth - SCREEN_WIDTH_OFFSET - TOTAL_GAP) / NUM_COLUMNS;
+
+
+const baseTile: ViewStyle = {
+  display: 'flex',
+  width: TILE_WIDTH,
+  height: TILE_WIDTH,
+  margin: TILE_MARGIN,
+  borderRadius: 8,
+};
+
+const baseTileHover: ViewStyle = {
+  backgroundColor: 'black',
+}
+
+const styles = StyleSheet.create({
+  goodTile: {
+    ...baseTile,
+    backgroundColor: '#8A9A8A',
+  },
+  fairTile: {
+    ...baseTile,
+    backgroundColor: '#C16733',
+  },
+  poorTile: {
+    ...baseTile,
+    backgroundColor: '#800020',
+  },
+  emptyTile: {
+    ...baseTile,
+    backgroundColor: '#a5a4a5',
+  }
+})
