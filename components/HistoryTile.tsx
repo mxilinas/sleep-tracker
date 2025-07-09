@@ -2,11 +2,36 @@ import { Dimensions, StyleSheet, ViewStyle } from "react-native"
 import { Text, View } from "./Themed"
 
 // =======================  TODO: Replace with actual object type (start)
-export interface CalendarEntry {
-  sleepQuality: SleepQuality,
+export class CalendarEntry {
+  date: YearMonthDay;
+  sleepQuality: SleepQuality;
   // timeVolume: TimeVolumeSeries, NOTE: may later implement
-  sleepTimeRange: TimeRange,
-  notes: string
+  sleepTimeRange: TimeRange;
+  notes: string;
+
+  constructor(date: YearMonthDay, sleepQuality: SleepQuality,
+    sleepTimeRange: TimeRange, notes: string) {
+    this.date = date;
+    this.sleepQuality = sleepQuality;
+    this.sleepTimeRange = sleepTimeRange;
+    this.notes = notes;
+  }
+}
+
+export class YearMonthDay {
+  day: number;
+  month: number;
+  year: number;
+
+  constructor(year: number, month: number, day: number) {
+    this.year = year;
+    this.month = month;
+    this.day = day;
+  }
+
+  toString() {
+    return `${this.year}-${this.month}-${this.day}`
+  }
 }
 
 export enum SleepQuality {
@@ -15,21 +40,41 @@ export enum SleepQuality {
   GOOD,
 }
 
-export interface TimeVolumeSeries {
-  series: Array<{ time: Time, volume: Decibel }>
-}
+// TODO: maybe use later
+// export interface TimeVolumeSeries {
+//   series: Array<{ time: Time, volume: Decibel }>
+// }
 
 /// Time should be given in 24-hour format
-export interface Time {
-  hour: number,
-  minute: number,
-  second: number,
+export class Time {
+  hour: number;
+  minute: number;
+  second: number;
+
+  constructor(hour: number, minute: number, second: number) {
+    this.hour = hour;
+    this.minute = minute;
+    this.second = second;
+  }
+
+  toString() {
+    return `${this.hour}:${this.minute}:${this.second}`;
+  }
 }
 export type Decibel = number
 
-export interface TimeRange {
-  startTime: Time,
-  endTime: Time,
+export class TimeRange {
+  startTime: Time;
+  endTime: Time;
+
+  constructor(startTime: Time, endTime: Time) {
+    this.startTime = startTime;
+    this.endTime = endTime;
+  }
+
+  toString() {
+    return `${this.startTime.toString()}-${this.endTime.toString()}`;
+  }
 }
 // =======================  TODO: Replace with actual object type (end)
 
@@ -51,13 +96,13 @@ export default function HistoryTile({ calendarEntry, text }: { calendarEntry: Ca
   )
 }
 
+
 const screenWidth = Dimensions.get('screen').width;
 const TILE_MARGIN = 4;
 const NUM_COLUMNS = 7;
 const TOTAL_GAP = TILE_MARGIN * 2 * NUM_COLUMNS;
 const SCREEN_WIDTH_OFFSET = (screenWidth / NUM_COLUMNS) % 2; // The value to subtract to remove the fractional component
 const TILE_WIDTH = (screenWidth - SCREEN_WIDTH_OFFSET - TOTAL_GAP) / NUM_COLUMNS;
-
 
 const baseTile: ViewStyle = {
   display: 'flex',
