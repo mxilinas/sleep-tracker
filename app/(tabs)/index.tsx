@@ -1,14 +1,10 @@
 import { StyleSheet } from 'react-native';
 
-import { QualityQuestionnaire } from '@/components/QualityQuestionnaire';
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Text, View } from '@/components/Themed';
+import { View } from '@/components/Themed';
 
-import { Accelerometer } from 'expo-sensors';
-import { useEffect, useState } from 'react';
-import NumberWheel from '@/components/NumberWheel';
-import SmartAlarm from "@/components/SmartAlarm.1";
+import { useState } from 'react';
+import SmartAlarm from "@/components/SmartAlarm";
 
 const storeData = async (date: string, value: string) => {
     try {
