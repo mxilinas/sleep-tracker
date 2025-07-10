@@ -3,6 +3,11 @@ import { StyleSheet } from 'react-native';
 import { QualityQuestionnaire } from '@/components/QualityQuestionnaire';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Text, View } from '@/components/Themed';
+
+import { Accelerometer } from 'expo-sensors';
+import { useEffect, useState } from 'react';
+import SmartAlarm from '@/components/SmartAlarm';
 
 const storeData = async (date: string, value: string) => {
     try {
@@ -13,8 +18,13 @@ const storeData = async (date: string, value: string) => {
 }
 
 export default function TabOneScreen() {
+
+    const [data, setData] = useState(0);
+
     return (
-        <QualityQuestionnaire />
+        <View>
+            <SmartAlarm/>
+        </View>
     );
 }
 
