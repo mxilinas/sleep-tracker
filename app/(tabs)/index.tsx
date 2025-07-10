@@ -7,7 +7,8 @@ import { Text, View } from '@/components/Themed';
 
 import { Accelerometer } from 'expo-sensors';
 import { useEffect, useState } from 'react';
-import SmartAlarm from '@/components/SmartAlarm';
+import NumberWheel from '@/components/NumberWheel';
+import SmartAlarm from "@/components/SmartAlarm.1";
 
 const storeData = async (date: string, value: string) => {
     try {
@@ -23,7 +24,7 @@ export default function TabOneScreen() {
 
     return (
         <View>
-            <SmartAlarm/>
+            <SmartAlarm></SmartAlarm>
         </View>
     );
 }

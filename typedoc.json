@@ -1,0 +1,16 @@
+{
+    "entryPoints": [
+        "./app"
+    ],
+    "out": "docs",
+    "includeVersion": true,
+    "exclude": [
+        "**/*.test.ts",
+        "**/*.spec.ts"
+    ],
+    "excludeExternals": false,
+    "excludePrivate": false,
+    "excludeProtected": false,
+    "excludeNotDocumented": false,
+    "plugin": []
+}
