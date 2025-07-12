@@ -149,10 +149,11 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
         const scale = lerp(1.0, 0.5, sharpBowl(t, 10));
 
         const styles = StyleSheet.create({
-            item: {
-                fontFamily: 'SF Mono',
-                fontVariant: ['tabular-nums'],
-                fontSize: numberHeight - 10, // magic wow!
+            itemContainer: {
+                aspectRatio: 1,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
                 height: numberHeight,
                 color: 'white',
                 userSelect: 'none',
@@ -162,13 +163,18 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
                     { scale: scale },
                 ],
                 opacity: opacity
+            },
+            item: {
+                fontFamily: 'SpaceMono',
+                fontSize: 35,
+                color: 'white',
             }
         })
 
         return (
-            <Text style={styles.item} key={renderItem.index}>
-                {renderItem.item != -1 ? renderItem.item.toString().padStart(2, '0') : ""}
-            </Text>
+            <View style={styles.itemContainer} key={renderItem.index}>
+                <Text style={styles.item}>{renderItem.item != -1 ? renderItem.item.toString().padStart(2, '0') : ""}</Text>
+            </View>
         )
     }
 
@@ -211,16 +217,16 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
 
     return (
         <FlatList
-            decelerationRate={'normal'}
             showsVerticalScrollIndicator={false}
-            onMomentumScrollEnd={handleMomentumEnd}
+            decelerationRate={'fast'}
             snapToStart={true}
-            snapToAlignment={"center"}
+            snapToEnd={true}
             snapToInterval={numberHeight}
-            bounces={false}
-            bouncesZoom={false}
+            bounces={true}
+            bouncesZoom={true}
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
+            onMomentumScrollEnd={handleMomentumEnd}
             onScroll={handleScroll}
             onScrollEndDrag={handleScrollEndDrag}
             scrollEventThrottle={16}
