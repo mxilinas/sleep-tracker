@@ -1,5 +1,5 @@
 import { Text, StyleSheet, NativeScrollEvent, NativeSyntheticEvent, View, Dimensions, } from "react-native";
-import { useRef, useState } from "react";
+import { forwardRef, useImperativeHandle, useRef, useState } from "react";
 import React from "react";
 import { FlatList } from "react-native";
 import * as Haptics from "expo-haptics";
@@ -75,6 +75,9 @@ function invlerp(a: number, b: number, v: number): number {
     return (v - a) / (b - a);
 }
 
+export type NumberWheelRef = {
+    getSelectedNumber: () => number
+}
 
 type NumberWheelProps = {
     height: number;
@@ -85,13 +88,16 @@ type NumberWheelProps = {
 }
 
 
-export default function NumberWheel(props: NumberWheelProps) {
+const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberWheelProps, ref) => {
 
-    var numbers: number[] = genNumbers();
+    useImperativeHandle(ref, () => ({
+        getSelectedNumber: () => selectedNumber,
+    }));
 
-    function genNumbers() {
+    const padding: number = Math.trunc(props.nVisibleNumbers / 2)
+
+    const genNumbers = () => {
         var numbers = [];
-        const padding: number = Math.trunc(props.nVisibleNumbers / 2)
         for (let i = 0; i < padding; i++) {
             numbers.push(-1);
         }
@@ -112,7 +118,7 @@ export default function NumberWheel(props: NumberWheelProps) {
 
     const lastScrollDistNumbers = useRef(0);
 
-    const selectedNumber = Math.floor(scrollDistNumbers + props.nVisibleNumbers / 2) % 25;
+    const selectedNumber = Math.floor(scrollDistNumbers + props.nVisibleNumbers / 2) - padding % 25;
 
     const [distToLastNum, setDistToLastNum] = useState(0);
 
@@ -176,13 +182,13 @@ export default function NumberWheel(props: NumberWheelProps) {
         const pastSnappingThreshold = distToLastNum >= 0.5;
 
         if (pastSnappingThreshold && !snapped.current) {
+            Haptics.selectionAsync();
             snapped.current = true;
         }
 
         const pastNextNumber = distToLastNum >= 1.0;
 
         if (pastNextNumber) {
-            Haptics.selectionAsync();
             snapped.current = false;
             setDistToLastNum(0);
         }
@@ -191,16 +197,23 @@ export default function NumberWheel(props: NumberWheelProps) {
         lastScrollDistNumbers.current = scrollDistNumbers;
     };
 
+    const handleMomentumEnd = () => {
+        snapped.current = false;
+        setDistToLastNum(0);
+        Haptics.selectionAsync();
+    }
 
     const handleScrollEndDrag = () => {
-        Haptics.selectionAsync();
         setDistToLastNum(0);
     }
+
+    var numbers: number[] = genNumbers();
 
     return (
         <FlatList
             decelerationRate={'normal'}
             showsVerticalScrollIndicator={false}
+            onMomentumScrollEnd={handleMomentumEnd}
             snapToStart={true}
             snapToAlignment={"center"}
             snapToInterval={numberHeight}
@@ -216,4 +229,6 @@ export default function NumberWheel(props: NumberWheelProps) {
         >
         </FlatList>
     )
-}
+});
+
+export default NumberWheel;
