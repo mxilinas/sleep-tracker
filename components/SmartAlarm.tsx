@@ -1,7 +1,8 @@
-import { View, StyleSheet, Dimensions, Button } from "react-native";
+import { TouchableOpacity, View, StyleSheet, Dimensions } from "react-native";
 import NumberWheel from "./NumberWheel";
 import { useEffect, useState } from "react";
 import { Text } from "./Themed";
+import { useAudioPlayer } from "expo-audio";
 
 /** Time span for waking window. 30 = 30 minutes */
 const wakeWindow = 30;
@@ -33,14 +34,51 @@ function getHoursAsleep(currentHour: number, wakeHour: number) {
     return hoursAsleep;
 }
 
+type ButtonProps = {
+    onPress: () => void,
+    title: string,
+    color: string,
+}
+
+function CustomButton({ onPress, title, color }: ButtonProps) {
+
+    const styles = StyleSheet.create({
+        button: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: width,
+            height: 100,
+            backgroundColor: color,
+        },
+        title: {
+            fontSize: 50,
+        }
+    })
+
+    return (
+        <TouchableOpacity
+            style={styles.button}
+            onPress={onPress}
+        >
+            <Text style={styles.title}>
+                {title}
+            </Text>
+        </TouchableOpacity>
+    )
+}
+
+const alarmSoundSource = require("../alarm.wav");
+
 export default function SmartAlarm() {
+
+    const audioPlayer = useAudioPlayer(alarmSoundSource);
 
     const now = new Date();
     const currentHour = now.getHours();
     const currentMinute = now.getMinutes();
 
-
-    const [alarmTime, setAlarmTime] = useState({ hour: 0, minute: 0 });
+    const [started, setstarted] = useState(false);
 
     const [selectedHour, setSelectedHour] = useState(0);
     const [selectedMinute, setSelectedMinute] = useState(0);
@@ -52,21 +90,28 @@ export default function SmartAlarm() {
     const end = addTime(selectedHour, selectedMinute, wakeWindow);
     const wakeWindowEnd: string = `${timeToString(end.hour, end.minutes)}`;
 
-    console.log("hour: ", selectedHour);
-    console.log("minute: ", selectedMinute);
+    const hoursRemaining = Math.max(0, selectedHour - currentHour);
+    const minutesRemaining = Math.max(0, selectedMinute - currentMinute);
 
     useEffect(() => {
-        const intervalId = setInterval(() => {
+        if (!started) {
+            return;
+        }
+        const checkAlarm = setInterval(() => {
             const now = new Date();
             const currentHour = now.getHours();
             const currentMinute = now.getMinutes();
 
-            if (currentHour === alarmTime.hour && currentMinute === alarmTime.minute) {
+            if (currentHour === selectedHour && currentMinute === selectedMinute) {
+                console.log("Alarm sounding!");
+                audioPlayer.seekTo(0);
+                audioPlayer.play();
+                clearInterval(checkAlarm);
             }
-        }, 1000);
 
-        return () => clearInterval(intervalId);
-    }, []);
+        }, 1000);
+        return () => clearInterval(checkAlarm);
+    }, [started, currentHour, currentMinute]);
 
 
     const styles = StyleSheet.create({
@@ -121,12 +166,21 @@ export default function SmartAlarm() {
                 style={styles.wakeWindow}>
                 Wake up between {wakeWindowStart}-{wakeWindowEnd}
             </Text>
-            <Button
+            <CustomButton
+                color={'#80cc66'}
+                onPress={() => { setstarted(true); }}
+                title={'START'}>
+            </CustomButton>
+            <CustomButton
+                color={'#e66666'}
+                title={'STOP'}
                 onPress={() => {
+                    setstarted(false);
+                    audioPlayer.pause();
                 }}
-                title={'start'}>
-            </Button>
+            />
             <Text style={styles.wakeWindow}> Total hours: {hoursAsleep} </Text>
+            <Text style={styles.wakeWindow}> Time Remaining: {hoursRemaining}:{minutesRemaining} </Text>
         </View>
     );
 }
