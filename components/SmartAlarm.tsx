@@ -22,20 +22,35 @@ function addTime(hour: number, minute: number, minutes: number) {
     return { hour: hours % 24, minutes: totalMinutes - 60 * carryHours };
 }
 
+function getHoursAsleep(currentHour: number, wakeHour: number) {
+    const hoursAsleep = wakeHour - currentHour;
+    if (hoursAsleep < 0) {
+        return 24 - Math.abs(hoursAsleep);
+    }
+    if (hoursAsleep == 0) {
+        return 24;
+    }
+    return hoursAsleep;
+}
 
 export default function SmartAlarm() {
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
 
     const [alarmTime, setAlarmTime] = useState({ hour: 0, minute: 0 });
 
     const [selectedHour, setSelectedHour] = useState(0);
     const [selectedMinute, setSelectedMinute] = useState(0);
 
+    const hoursAsleep = getHoursAsleep(currentHour, selectedHour);
+
     const wakeWindowStart: string = timeToString(selectedHour, selectedMinute);
 
     const end = addTime(selectedHour, selectedMinute, wakeWindow);
     const wakeWindowEnd: string = `${timeToString(end.hour, end.minutes)}`;
-
-    const [elapsedTime, setElapsedTime] = useState(0);
 
     console.log("hour: ", selectedHour);
     console.log("minute: ", selectedMinute);
@@ -55,6 +70,9 @@ export default function SmartAlarm() {
 
 
     const styles = StyleSheet.create({
+        wakeWindow: {
+            fontSize: 26,
+        },
         bar: {
             height: 50,
             width: width / 1.25,
@@ -81,6 +99,7 @@ export default function SmartAlarm() {
 
     return (
         <View style={styles.main}>
+            <Text style={styles.wakeWindow}>Time: {`${currentHour}:${currentMinute}`} </Text>
             <View style={styles.container}>
                 <View style={styles.bar}></View>
                 <NumberWheel
@@ -98,13 +117,16 @@ export default function SmartAlarm() {
                     nVisibleNumbers={7}
                 />
             </View>
-            <Text>Wake up between {wakeWindowStart}-{wakeWindowEnd}</Text>
+            <Text
+                style={styles.wakeWindow}>
+                Wake up between {wakeWindowStart}-{wakeWindowEnd}
+            </Text>
             <Button
                 onPress={() => {
                 }}
                 title={'start'}>
             </Button>
-            <Text>{elapsedTime}</Text>
+            <Text style={styles.wakeWindow}> Total hours: {hoursAsleep} </Text>
         </View>
     );
 }

@@ -174,8 +174,20 @@ export default function NumberWheel(props: NumberWheelProps) {
         )
     }
 
+    const update = () => {
+        const selectedNumber = getSelectedNumber();
+        if (selectedNumber == lastSelectedNumber.current)
+            return;
+        if (selectedNumber < 0 || selectedNumber > props.numberRangeEnd) {
+            lastSelectedNumber.current = selectedNumber;
+            return;
+        }
+        props.onChanged(selectedNumber);
+        lastSelectedNumber.current = selectedNumber;
+    }
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+
 
         const dist = Math.abs(scrollDistNumbers - lastScrollDistNumbers.current);
 
@@ -186,16 +198,7 @@ export default function NumberWheel(props: NumberWheelProps) {
         if (pastSnappingThreshold && !snapped.current) {
             Haptics.selectionAsync();
             snapped.current = true;
-
-            const selectedNumber = getSelectedNumber();
-            if (selectedNumber == lastSelectedNumber.current)
-                return;
-            if (selectedNumber < 0 || selectedNumber > 24) {
-                lastSelectedNumber.current = selectedNumber;
-                return;
-            }
-            props.onChanged(selectedNumber);
-            lastSelectedNumber.current = selectedNumber;
+            update();
         }
 
         const pastNextNumber = distToLastNum >= 1.0;
@@ -213,16 +216,7 @@ export default function NumberWheel(props: NumberWheelProps) {
         snapped.current = false;
         setDistToLastNum(0);
         Haptics.selectionAsync();
-
-        const selectedNumber = getSelectedNumber();
-        if (selectedNumber == lastSelectedNumber.current)
-            return;
-        if (selectedNumber < 0 || selectedNumber > 24) {
-            lastSelectedNumber.current = selectedNumber;
-            return;
-        }
-        props.onChanged(selectedNumber);
-        lastSelectedNumber.current = selectedNumber;
+        update();
     }
 
     const handleScrollEndDrag = () => {
