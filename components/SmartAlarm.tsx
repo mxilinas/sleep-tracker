@@ -1,32 +1,44 @@
 import { View, StyleSheet, Dimensions, Button } from "react-native";
-import NumberWheel, { NumberWheelRef } from "./NumberWheel";
-import { useEffect, useRef, useState } from "react";
+import NumberWheel from "./NumberWheel";
+import { useEffect, useState } from "react";
 import { Text } from "./Themed";
 
+/** Time span for waking window. 30 = 30 minutes */
+const wakeWindow = 30;
 
 const { width } = Dimensions.get('window');
+
+
+function timeToString(hour: number, minute: number) {
+    const hourString = hour.toString().padStart(2, '0');
+    const minuteString = minute.toString().padStart(2, '0');
+    return `${hourString}:${minuteString}`;
+}
+
+function addTime(hour: number, minute: number, minutes: number) {
+    const totalMinutes = minute + minutes;
+    const carryHours = Math.floor(totalMinutes / 60);
+    const hours = hour + carryHours;
+    return { hour: hours % 24, minutes: totalMinutes - 60 * carryHours };
+}
+
 
 export default function SmartAlarm() {
 
     const [alarmTime, setAlarmTime] = useState({ hour: 0, minute: 0 });
 
-    const hourWheelRef = useRef<NumberWheelRef>(null);
-    const minuteWheelRef = useRef<NumberWheelRef>(null);
+    const [selectedHour, setSelectedHour] = useState(0);
+    const [selectedMinute, setSelectedMinute] = useState(0);
 
-    const getHour = () => {
-        const number = hourWheelRef.current?.getSelectedNumber();
-        console.log('Selected number:', number);
-        setAlarmTime({ ...alarmTime, hour: number! });
-    };
+    const wakeWindowStart: string = timeToString(selectedHour, selectedMinute);
 
-    const getMinute = () => {
-        const number = minuteWheelRef.current?.getSelectedNumber();
-        console.log('Selected number:', number);
-        setAlarmTime({ ...alarmTime, minute: number! });
-    };
+    const end = addTime(selectedHour, selectedMinute, wakeWindow);
+    const wakeWindowEnd: string = `${timeToString(end.hour, end.minutes)}`;
 
     const [elapsedTime, setElapsedTime] = useState(0);
 
+    console.log("hour: ", selectedHour);
+    console.log("minute: ", selectedMinute);
 
     useEffect(() => {
         const intervalId = setInterval(() => {
@@ -35,7 +47,6 @@ export default function SmartAlarm() {
             const currentMinute = now.getMinutes();
 
             if (currentHour === alarmTime.hour && currentMinute === alarmTime.minute) {
-                console.log("alarm triggered");
             }
         }, 1000);
 
@@ -53,6 +64,11 @@ export default function SmartAlarm() {
             borderRadius: 20,
             backgroundColor: '#80808066',
         },
+        main: {
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+        },
         container: {
             backgroundColor: '#1a1a1aff',
             display: 'flex',
@@ -64,28 +80,27 @@ export default function SmartAlarm() {
     })
 
     return (
-        <View>
+        <View style={styles.main}>
             <View style={styles.container}>
                 <View style={styles.bar}></View>
                 <NumberWheel
-                    ref={hourWheelRef}
+                    onChanged={(selected) => setSelectedHour(selected)}
                     numberRangeEnd={24}
                     paddingLeft={100}
                     height={375}
                     nVisibleNumbers={7}
                 />
                 <NumberWheel
-                    ref={minuteWheelRef}
+                    onChanged={(selected) => setSelectedMinute(selected)}
                     numberRangeEnd={59}
                     paddingRight={100}
                     height={375}
                     nVisibleNumbers={7}
                 />
             </View>
+            <Text>Wake up between {wakeWindowStart}-{wakeWindowEnd}</Text>
             <Button
                 onPress={() => {
-                    getHour();
-                    getMinute();
                 }}
                 title={'start'}>
             </Button>

@@ -75,24 +75,18 @@ function invlerp(a: number, b: number, v: number): number {
     return (v - a) / (b - a);
 }
 
-export type NumberWheelRef = {
-    getSelectedNumber: () => number
-}
 
 type NumberWheelProps = {
     height: number;
     nVisibleNumbers: number,
+    onChanged: (selectedNumber: number) => void;
     paddingRight?: number,
     paddingLeft?: number,
     numberRangeEnd: number,
 }
 
 
-const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberWheelProps, ref) => {
-
-    useImperativeHandle(ref, () => ({
-        getSelectedNumber: () => selectedNumber,
-    }));
+export default function NumberWheel(props: NumberWheelProps) {
 
     const padding: number = Math.trunc(props.nVisibleNumbers / 2)
 
@@ -118,7 +112,9 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
 
     const lastScrollDistNumbers = useRef(0);
 
-    const selectedNumber = Math.floor(scrollDistNumbers + props.nVisibleNumbers / 2) - padding % 25;
+    const lastSelectedNumber = useRef(0);
+    const getSelectedNumber = () => Math.floor(scrollDistNumbers + props.nVisibleNumbers / 2) - padding % 25;
+    var selectedNumber = 0;
 
     const [distToLastNum, setDistToLastNum] = useState(0);
 
@@ -190,6 +186,16 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
         if (pastSnappingThreshold && !snapped.current) {
             Haptics.selectionAsync();
             snapped.current = true;
+
+            const selectedNumber = getSelectedNumber();
+            if (selectedNumber == lastSelectedNumber.current)
+                return;
+            if (selectedNumber < 0 || selectedNumber > 24) {
+                lastSelectedNumber.current = selectedNumber;
+                return;
+            }
+            props.onChanged(selectedNumber);
+            lastSelectedNumber.current = selectedNumber;
         }
 
         const pastNextNumber = distToLastNum >= 1.0;
@@ -207,6 +213,16 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
         snapped.current = false;
         setDistToLastNum(0);
         Haptics.selectionAsync();
+
+        const selectedNumber = getSelectedNumber();
+        if (selectedNumber == lastSelectedNumber.current)
+            return;
+        if (selectedNumber < 0 || selectedNumber > 24) {
+            lastSelectedNumber.current = selectedNumber;
+            return;
+        }
+        props.onChanged(selectedNumber);
+        lastSelectedNumber.current = selectedNumber;
     }
 
     const handleScrollEndDrag = () => {
@@ -229,12 +245,10 @@ const NumberWheel = forwardRef<NumberWheelRef, NumberWheelProps>((props: NumberW
             onMomentumScrollEnd={handleMomentumEnd}
             onScroll={handleScroll}
             onScrollEndDrag={handleScrollEndDrag}
-            scrollEventThrottle={16}
+            scrollEventThrottle={1}
             data={numbers}
             renderItem={number}
         >
         </FlatList>
     )
-});
-
-export default NumberWheel;
+};
