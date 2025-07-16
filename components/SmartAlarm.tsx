@@ -1,7 +1,7 @@
 import { TouchableOpacity, View, StyleSheet, Dimensions } from "react-native";
 import NumberWheel from "./NumberWheel";
 import { useEffect, useState } from "react";
-import { Text } from "./Themed";
+import { Text as StyledText } from "./Themed";
 import { useAudioPlayer } from "expo-audio";
 
 /** Time span for waking window. 30 = 30 minutes */
@@ -61,9 +61,9 @@ function CustomButton({ onPress, title, color }: ButtonProps) {
             style={styles.button}
             onPress={onPress}
         >
-            <Text style={styles.title}>
+            <StyledText style={styles.title}>
                 {title}
-            </Text>
+            </StyledText>
         </TouchableOpacity>
     )
 }
@@ -144,7 +144,7 @@ export default function SmartAlarm() {
 
     return (
         <View style={styles.main}>
-            <Text style={styles.wakeWindow}>Time: {`${currentHour}:${currentMinute}`} </Text>
+            <StyledText style={styles.wakeWindow}>Time: {`${currentHour}:${currentMinute}`} </StyledText>
             <View style={styles.container}>
                 <View style={styles.bar}></View>
                 <NumberWheel
@@ -162,10 +162,10 @@ export default function SmartAlarm() {
                     nVisibleNumbers={7}
                 />
             </View>
-            <Text
+            <StyledText
                 style={styles.wakeWindow}>
                 Wake up between {wakeWindowStart}-{wakeWindowEnd}
-            </Text>
+            </StyledText>
             <CustomButton
                 color={'#80cc66'}
                 onPress={() => { setstarted(true); }}
@@ -179,8 +179,8 @@ export default function SmartAlarm() {
                     audioPlayer.pause();
                 }}
             />
-            <Text style={styles.wakeWindow}> Total hours: {hoursAsleep} </Text>
-            <Text style={styles.wakeWindow}> Time Remaining: {hoursRemaining}:{minutesRemaining} </Text>
+            <StyledText style={styles.wakeWindow}> Total hours: {hoursAsleep} </StyledText>
+            <StyledText style={styles.wakeWindow}> Time Remaining: {hoursRemaining}:{minutesRemaining} </StyledText>
         </View>
     );
 }

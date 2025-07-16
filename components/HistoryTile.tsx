@@ -1,12 +1,12 @@
-import { Dimensions, StyleSheet, ViewStyle } from "react-native"
-import { Text, View } from "./Themed"
+import { Dimensions, StyleSheet, View, ViewStyle } from "react-native"
+import { Text as StyledText } from "./Themed"
 import { CalendarEntry, SleepQuality } from "./Calendar";
 
 export default function HistoryTile({ calendarEntry, text }: { calendarEntry: CalendarEntry | null, text: string }) {
   if (calendarEntry === null) {
     return (
       <View style={styles.emptyTile}>
-        <Text style={styles.dayText}>{text}</Text>
+        <StyledText style={styles.dayText}>{text}</StyledText>
       </View>
     )
   }
@@ -15,7 +15,7 @@ export default function HistoryTile({ calendarEntry, text }: { calendarEntry: Ca
       calendarEntry.sleepQuality == SleepQuality.POOR ? styles.poorTile
         : (calendarEntry.sleepQuality == SleepQuality.FAIR ? styles.fairTile
           : styles.goodTile)}>
-      <Text style={styles.dayText}>{text}</Text>
+      <StyledText style={styles.dayText}>{text}</StyledText>
     </View>
   )
 }

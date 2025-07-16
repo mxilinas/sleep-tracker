@@ -1,4 +1,4 @@
-import { Text, View } from "@/components/Themed";
+import { Text as StyledText, View as StyledView } from "@/components/Themed";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import HistoryTile from "@/components/HistoryTile";
 import { Router, useRouter } from "expo-router";
@@ -18,9 +18,9 @@ export default function SleepHistory() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{currDate.toPrettyString()}</Text>
-      <View style={styles.historyGrid}>
+    <StyledView style={styles.container}>
+      <StyledText style={styles.title}>{currDate.toPrettyString()}</StyledText>
+      <StyledView style={styles.historyGrid}>
         {
           calendarEntries.map((entry, i) => {
             return (
@@ -30,8 +30,8 @@ export default function SleepHistory() {
             );
           })
         }
-      </View>
-    </View>
+      </StyledView>
+    </StyledView>
   )
 }
 

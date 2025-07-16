@@ -1,5 +1,4 @@
-import { CalendarEntry } from '@/components/SleepContext';
-import { Text } from '@/components/Themed';
+import { Text as StyledText } from '@/components/Themed';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 
 export default function EntryDetails() {
