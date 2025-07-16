@@ -1,18 +1,8 @@
-import { StyleSheet } from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { View } from '@/components/Themed';
-
+import { StyleSheet, View } from 'react-native';
 import { useState } from 'react';
-import SmartAlarm from "@/components/SmartAlarm";
 
-const storeData = async (date: string, value: string) => {
-    try {
-        await AsyncStorage.setItem(date, JSON.stringify(value));
-    } catch (e) {
-        console.error(e);
-    }
-}
+import { QualityQuestionnaire } from '@/components/QualityQuestionnaire';
+import SmartAlarm from '@/components/SmartAlarm';
 
 export default function TabOneScreen() {
 

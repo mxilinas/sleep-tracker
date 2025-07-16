@@ -6,7 +6,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
 
-import { SleepProvider } from '@/components/SleepContext';
+import { useColorScheme } from '@/components/useColorScheme';
+import { initializeDatabase } from '@/db/schema';
+import { getDB } from '@/db/database';
 
 export {
     // Catch any errors thrown by the Layout component.
@@ -46,13 +48,22 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
+    const colorScheme = useColorScheme();
+
+    // Get and initialize (if needed) the database
+    useEffect(() => {
+        (async () => {
+            const db = await getDB();
+            await initializeDatabase(db);
+        })();
+    }, [])
 
     return (
-        <SleepProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
             <Stack>
                 <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
                 <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
             </Stack>
-        </SleepProvider>
+        </ThemeProvider>
     );
 }
