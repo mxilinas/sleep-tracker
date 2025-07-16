@@ -2,16 +2,6 @@ import { StyleSheet } from 'react-native';
 
 import { QualityQuestionnaire } from '@/components/QualityQuestionnaire';
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const storeData = async (date: string, value: string) => {
-    try {
-        await AsyncStorage.setItem(date, JSON.stringify(value));
-    } catch (e) {
-        console.error(e);
-    }
-}
-
 export default function TabOneScreen() {
     return (
         <QualityQuestionnaire />
