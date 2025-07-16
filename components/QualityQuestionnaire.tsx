@@ -22,6 +22,7 @@ export function QualityQuestionnaire() {
             <Text style={styles.title}>How was your sleep?</Text>
             <View style={styles.buttonContainer}>
                 <Button
+                    color={"green"}
                     title='Good'
                     onPress={() => setSleepData({
                         ...sleepData,
@@ -29,6 +30,7 @@ export function QualityQuestionnaire() {
                     })}>
                 </Button>
                 <Button
+                    color={"yellow"}
                     title='Fair'
                     onPress={() => setSleepData({
                         ...sleepData,
@@ -36,6 +38,7 @@ export function QualityQuestionnaire() {
                     })}>
                 </Button>
                 <Button
+                    color={"red"}
                     title='Poor'
                     onPress={() => setSleepData({
                         ...sleepData,
@@ -63,6 +66,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
     },
     buttonContainer: {
+        backgroundColor: "white",
         width: 100,
         gap: 5,
     },
