@@ -1,16 +1,30 @@
-import { Button, Dimensions, StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 import { Text as StyledText } from "./Themed";
 import CustomButton from './CustomButton';
+import { SleepQuality, Time, TimeRange, SimpleDate, CalendarEntry } from './Calendar';
+import { insertEntry } from '@/db/queries';
 
-enum SleepQuality {
-  GOOD,
-  FAIR,
-  POOR
-}
 
 const { width, height } = Dimensions.get('window');
 
-export default function QualityQuestionnaire() {
+
+async function addEntry(quality: SleepQuality, sleepStart: Time, sleepEnd: Time) {
+  console.log("added entry");
+  const simpleDate = SimpleDate.currentDate();
+  const entry = new CalendarEntry(
+    simpleDate, quality, new TimeRange(sleepStart, sleepEnd), ""
+  );
+  await insertEntry(entry);
+}
+
+
+type QualityQuestionnaireProps = {
+  sleepStart: Time,
+  sleepEnd: Time,
+};
+
+
+export default function QualityQuestionnaire({ sleepStart, sleepEnd }: QualityQuestionnaireProps) {
   if (styles == undefined) {
     console.error("Failed to create stylesheet!");
   }
@@ -22,17 +36,17 @@ export default function QualityQuestionnaire() {
         <CustomButton
           color={"#59bf40"}
           title='Good'
-          onPress={() => { }}>
+          onPress={async () => { await addEntry(SleepQuality.GOOD, sleepStart, sleepEnd) }}>
         </CustomButton>
         <CustomButton
           color={"#bf9040"}
           title='Fair'
-          onPress={() => { }}>
+          onPress={async () => { await addEntry(SleepQuality.FAIR, sleepStart, sleepEnd) }}>
         </CustomButton>
         <CustomButton
           color={"#bf4040"}
           title='Poor'
-          onPress={() => { }}>
+          onPress={async () => { await addEntry(SleepQuality.POOR, sleepStart, sleepEnd) }}>
         </CustomButton>
       </View>
     </View>

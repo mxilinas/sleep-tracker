@@ -80,7 +80,7 @@ export class SimpleDate {
   }
 
   toString() {
-    return `${this.year}-${this.month}-${this.day}`
+    return `${this.getYear()}-${this.getMonth()}-${this.getDay()}`
   }
 
   // PRE: dateStr must be in the form represented by 'toString()'
@@ -154,7 +154,7 @@ export class Time {
     const [hour, minute, second] = Time.extractHourMinuteSecondFromString(timeStr);
     return new Time(hour, minute, second);
   }
- 
+
   // Returns the numeric values for hour, minute, and second
   // in the array shaped as [hour, minute, second].
   //

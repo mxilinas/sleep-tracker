@@ -1,10 +1,11 @@
 import { View, StyleSheet, Dimensions } from "react-native";
 import NumberWheel from "./NumberWheel";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Text as StyledText } from "./Themed";
 import { useAudioPlayer } from "expo-audio";
 import QualityQuestionnaire from "./QualityQuestionnaire";
 import CustomButton from "./CustomButton";
+import { Time } from "./Calendar";
 
 const { width } = Dimensions.get('window');
 
@@ -36,7 +37,7 @@ function getTimeAsleep(wakeHour: number, wakeMinute: number): { hour: number, mi
     hour = diffHours;
   }
   if (diffHours < 0) {
-    hour = 24 - Math.abs(diffHours);
+    hour = 23 - Math.abs(diffHours);
   }
 
   if (diffMins > 0) {
@@ -44,7 +45,9 @@ function getTimeAsleep(wakeHour: number, wakeMinute: number): { hour: number, mi
   }
   if (diffMins < 0) {
     minute = 60 - Math.abs(diffMins)
-    hour = 24 - Math.abs(diffHours);
+    if (diffHours <= 0) {
+      hour = 23 - Math.abs(diffHours);
+    }
   }
 
   return { hour: hour, minute: minute };
@@ -53,7 +56,7 @@ function getTimeAsleep(wakeHour: number, wakeMinute: number): { hour: number, mi
 
 type SmartAlarmProps = {
   wakeWindow: 30,
-  onStop: () => void,
+  onStop: (stopTime: Time) => void,
 }
 
 function SmartAlarm({ wakeWindow, onStop }: SmartAlarmProps) {
@@ -65,6 +68,8 @@ function SmartAlarm({ wakeWindow, onStop }: SmartAlarmProps) {
   const [started, setstarted] = useState(false);
   const [selectedHour, setSelectedHour] = useState(0);
   const [selectedMinute, setSelectedMinute] = useState(0);
+
+  const startTime = useRef<Time>(null);
 
   const timeAsleep = getTimeAsleep(selectedHour, selectedMinute);
 
@@ -154,7 +159,14 @@ function SmartAlarm({ wakeWindow, onStop }: SmartAlarmProps) {
         </StyledText>
         <CustomButton
           color={'#80cc66'}
-          onPress={() => { setstarted(true); }}
+          onPress={() => {
+            const now = new Date();
+            let start = new Time(
+              now.getHours(), now.getMinutes(), now.getSeconds()
+            );
+            startTime.current = start;
+            setstarted(true);
+          }}
           title={'START'}>
         </CustomButton>
         <CustomButton
@@ -163,7 +175,7 @@ function SmartAlarm({ wakeWindow, onStop }: SmartAlarmProps) {
           onPress={() => {
             setstarted(false);
             audioPlayer.pause();
-            onStop();
+            onStop(startTime.current!);
           }}
         />
         <CustomButton
@@ -181,21 +193,36 @@ function SmartAlarm({ wakeWindow, onStop }: SmartAlarmProps) {
   );
 }
 
+
 export default function Alarm() {
   const [stopped, setStopped] = useState(false);
+
+  const startTime = useRef<Time | null>(null);
 
   if (!stopped) {
     return (
       <SmartAlarm
-        onStop={() => setStopped(true)}
+        onStop={(start: Time) => {
+          setStopped(true)
+          startTime.current = start;
+        }}
         wakeWindow={30}
       />
     )
   }
 
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentSecond = now.getSeconds();
+  let stopTime = new Time(currentHour, currentMinute, currentSecond);
+
   return (
     <View>
-      <QualityQuestionnaire />
+      <QualityQuestionnaire
+        sleepStart={startTime.current!}
+        sleepEnd={stopTime}
+      />
     </View>
   )
 }
