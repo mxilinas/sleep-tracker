@@ -2,9 +2,9 @@ import { Text as StyledText, View as StyledView } from "@/components/Themed";
 import { StyleSheet, TouchableOpacity } from "react-native";
 import HistoryTile from "@/components/HistoryTile";
 import { Router, useRouter } from "expo-router";
-import { CalendarEntry, SleepQuality, SimpleDate } from "@/components/Calendar";
+import { CalendarEntry, SleepQuality, SimpleDate, Time, TimeRange } from "@/components/Calendar";
 import { useEffect, useState } from "react";
-import { getEntriesInMonth } from "@/db/queries";
+import { getAllEntries, getEntriesInMonth, getEntryFromDate, insertEntry } from "@/db/queries";
 
 export default function SleepHistory() {
   const router = useRouter();
@@ -13,7 +13,20 @@ export default function SleepHistory() {
 
   useEffect(() => {
     (async () => {
-      setCalendarEntries(await getEntriesInMonth(currDate)); 
+      const todayEntry = await getEntryFromDate(new SimpleDate(2025, 7, 17));
+      if (todayEntry !== null) {
+        console.log("Already exists!");
+      } else {
+        const testEntry = new CalendarEntry(
+          new SimpleDate(2025, 7, 17),
+          SleepQuality.FAIR,
+          new TimeRange(new Time(19, 40, 20), new Time(8, 0, 0)),
+          "Spooky scary nightmare but other than that alright!",
+        );
+        await insertEntry(testEntry);
+        console.log('INSERTED');
+      }
+      setCalendarEntries(await getEntriesInMonth(currDate));
     })();
   }, []);
 
@@ -24,7 +37,7 @@ export default function SleepHistory() {
         {
           calendarEntries.map((entry, i) => {
             return (
-              <TouchableOpacity key={i} onPress={() => gotoEntryPage(router, null)}>
+              <TouchableOpacity key={i} onPress={() => gotoEntryPage(router, entry)}>
                 <HistoryTile calendarEntry={entry} text={`${i + 1}`} />
               </TouchableOpacity>
             );

@@ -1,9 +1,10 @@
-import { Text, StyleSheet, NativeScrollEvent, NativeSyntheticEvent, View, Dimensions, } from "react-native";
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import { Text, StyleSheet, NativeScrollEvent, NativeSyntheticEvent, View, Dimensions, ScrollView, } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import React from "react";
 import { FlatList } from "react-native";
 import * as Haptics from "expo-haptics";
 
+import { Platform } from 'react-native';
 
 const { width } = Dimensions.get('window');
 
@@ -88,6 +89,14 @@ type NumberWheelProps = {
 
 export default function NumberWheel(props: NumberWheelProps) {
 
+    const flatListRef = useRef<FlatList>(null);
+
+    useEffect(() => {
+        if (!flatListRef.current) {
+            return;
+        }
+    }, [flatListRef.current])
+
     const padding: number = Math.trunc(props.nVisibleNumbers / 2)
 
     const genNumbers = () => {
@@ -114,7 +123,6 @@ export default function NumberWheel(props: NumberWheelProps) {
 
     const lastSelectedNumber = useRef(0);
     const getSelectedNumber = () => Math.floor(scrollDistNumbers + props.nVisibleNumbers / 2) - padding % 25;
-    var selectedNumber = 0;
 
     const [distToLastNum, setDistToLastNum] = useState(0);
 
@@ -162,7 +170,7 @@ export default function NumberWheel(props: NumberWheelProps) {
             },
             item: {
                 fontFamily: 'SpaceMono',
-                fontSize: 35,
+                fontSize: 28,
                 color: 'white',
             }
         })
@@ -187,7 +195,6 @@ export default function NumberWheel(props: NumberWheelProps) {
     }
 
     const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-
 
         const dist = Math.abs(scrollDistNumbers - lastScrollDistNumbers.current);
 
@@ -217,29 +224,33 @@ export default function NumberWheel(props: NumberWheelProps) {
         setDistToLastNum(0);
         Haptics.selectionAsync();
         update();
-    }
+
+        if (Platform.OS === 'android') {
+            const nativeScrollRef = flatListRef.current!.getNativeScrollRef() as ScrollView
+            nativeScrollRef.scrollTo({ x: 0, y: Math.round(scrollDistNumbers) * 50, animated: false });
+        }
+
+    };
 
     const handleScrollEndDrag = () => {
         setDistToLastNum(0);
-    }
+    };
 
     var numbers: number[] = genNumbers();
 
     return (
         <FlatList
+            ref={flatListRef}
             showsVerticalScrollIndicator={false}
             decelerationRate={'fast'}
-            snapToStart={true}
-            snapToEnd={true}
-            snapToInterval={numberHeight}
-            bounces={true}
-            bouncesZoom={true}
+            snapToInterval={Platform.OS === 'ios' ? 50 : undefined}
+            bounces={false}
             style={styles.container}
             contentContainerStyle={styles.contentContainer}
             onMomentumScrollEnd={handleMomentumEnd}
             onScroll={handleScroll}
             onScrollEndDrag={handleScrollEndDrag}
-            scrollEventThrottle={1}
+            scrollEventThrottle={16}
             data={numbers}
             renderItem={number}
         >

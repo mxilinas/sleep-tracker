@@ -9,7 +9,6 @@ const wakeWindow = 30;
 
 const { width } = Dimensions.get('window');
 
-
 function timeToString(hour: number, minute: number) {
     const hourString = hour.toString().padStart(2, '0');
     const minuteString = minute.toString().padStart(2, '0');
@@ -151,14 +150,14 @@ export default function SmartAlarm() {
                     onChanged={(selected) => setSelectedHour(selected)}
                     numberRangeEnd={24}
                     paddingLeft={100}
-                    height={375}
+                    height={7*50}
                     nVisibleNumbers={7}
                 />
                 <NumberWheel
                     onChanged={(selected) => setSelectedMinute(selected)}
                     numberRangeEnd={59}
                     paddingRight={100}
-                    height={375}
+                    height={7*50}
                     nVisibleNumbers={7}
                 />
             </View>
