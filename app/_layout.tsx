@@ -54,6 +54,8 @@ function RootLayoutNav() {
     useEffect(() => {
         (async () => {
             const db = await getDB();
+            // // TODO: remove nuke test
+            // await nukeDatabase(db);
             await initializeDatabase(db);
         })();
     }, [])

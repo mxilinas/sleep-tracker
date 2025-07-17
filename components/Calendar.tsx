@@ -76,7 +76,7 @@ export class SimpleDate {
       "July", "August", "September", "October", "November", "December"
     ];
 
-    return `${monthNames[month]} ${day}, ${year}`;
+    return `${monthNames[month - 1]} ${day}, ${year}`;
   }
 
   toString() {
@@ -146,7 +146,7 @@ export class Time {
   }
 
   toString() {
-    return `${this.hour}:${this.minute}:${this.second}`;
+    return this.padTime();
   }
 
   // PRE: timeStr must be in the form represented by 'toString()'
@@ -193,6 +193,13 @@ export class Time {
     return [hour, minute, second];
   }
 
+  padTime() {
+    const paddedHour = this.hour.toString().padStart(2, '0')
+    const paddedMinute = this.minute.toString().padStart(2, '0')
+    const paddedSecond = this.second.toString().padStart(2, '0')
+    return `${paddedHour}:${paddedMinute}:${paddedSecond}`
+  }
+
 }
 
 export class TimeRange {
@@ -205,6 +212,6 @@ export class TimeRange {
   }
 
   toString() {
-    return `${this.startTime.toString()}-${this.endTime.toString()}`;
+    return `${this.startTime.toString()} - ${this.endTime.toString()}`;
   }
 }

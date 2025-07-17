@@ -39,22 +39,29 @@ const baseTileHover: ViewStyle = {
   backgroundColor: 'black',
 }
 
+export enum TileColor {
+  GOOD = "#7CB342",
+  FAIR = "#C16733",
+  POOR = "#800020",
+  EMPTY = "#9DA8AF",
+}
+
 const styles = StyleSheet.create({
   goodTile: {
     ...baseTile,
-    backgroundColor: '#7CB342',
+    backgroundColor: TileColor.GOOD,
   },
   fairTile: {
     ...baseTile,
-    backgroundColor: '#C16733',
+    backgroundColor: TileColor.FAIR,
   },
   poorTile: {
     ...baseTile,
-    backgroundColor: '#800020',
+    backgroundColor: TileColor.GOOD,
   },
   emptyTile: {
     ...baseTile,
-    backgroundColor: '#9DA8AF',
+    backgroundColor: TileColor.EMPTY,
   },
   dayText: {
     color: '#ffffff',

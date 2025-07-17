@@ -13,6 +13,19 @@ export default function SleepHistory() {
 
   useEffect(() => {
     (async () => {
+      // // TODO: Remove this test
+      // const todayEntry = await getEntryFromDate(new SimpleDate(2025, 7, 17));
+      // if (todayEntry !== null) {
+      //   console.log("Already exists!");
+      // } else {
+      //   const testEntry = new CalendarEntry(
+      //     new SimpleDate(2025, 7, 17),
+      //     SleepQuality.FAIR,
+      //     new TimeRange(new Time(19, 40, 20), new Time(8, 0, 0)),
+      //     "Spooky scary nightmare but other than that alright!",
+      //   );
+      //   await insertEntry(testEntry);
+      // }
       setCalendarEntries(await getEntriesInMonth(currDate));
     })();
   }, []);

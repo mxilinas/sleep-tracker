@@ -1,9 +1,24 @@
 import { CalendarEntry, SimpleDate, SleepQuality } from '@/components/Calendar';
+import { TileColor } from '@/components/HistoryTile';
 import { Text as StyledText } from '@/components/Themed';
 import { getEntryFromDate } from '@/db/queries';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+
+const getQualityColor = (entry: CalendarEntry | null) => {
+  if (entry === null) {
+    return "#00000000";
+  }
+  switch (entry.sleepQuality) {
+    case SleepQuality.POOR:
+      return TileColor.POOR;
+    case SleepQuality.FAIR:
+      return TileColor.FAIR;
+    case SleepQuality.GOOD:
+      return TileColor.GOOD;
+  }
+}
 
 export default function EntryDetails() {
   const { date } = useLocalSearchParams<{ date: string }>();
@@ -30,24 +45,60 @@ export default function EntryDetails() {
   return (
     <>
       <Stack.Screen options={{ title: `Entry from ${entryText(entry, () => { return entry!.date.toPrettyString(); })}` }} />
-      <Text style={styles.qualityText}>Sleep Quality: {entryText(entry, () => { return QualityText.get(entry!.sleepQuality)!; })}</Text>
-      <Text style={styles.sleepTimeText}>Sleep Time: {entryText(entry, () => { return entry!.sleepTime.toString(); })}</Text>
-      <View style={styles.notesContainer}>
-        <Text style={styles.notes}>Notes: {entryText(entry, () => { return entry!.notes; })}</Text>
-      </View>
+      <View style={styles.container}>
+        <View style={styles.topContainer}>
+          <View style={styles.innerContainer}>
+            <Text style={styles.containerTitle}>Sleep Quality</Text>
+            <Text style={[styles.qualityText, { backgroundColor: getQualityColor(entry) }]}>{entryText(entry, () => { return QualityText.get(entry!.sleepQuality)!; })}</Text>
+          </View>
+          <View style={styles.innerContainer}>
+            <Text style={styles.containerTitle}>Sleep Time</Text>
+            <Text style={styles.timeText}>{entryText(entry, () => { return entry!.sleepTime.startTime.toString(); })}  🌙</Text>
+            <Text style={styles.timeText}>{entryText(entry, () => { return entry!.sleepTime.endTime.toString(); })}  ☀️</Text>
+          </View>
+        </View>
+        <View style={styles.notesContainer}>
+          <Text style={styles.notes}>Notes: {entryText(entry, () => { return entry!.notes; })}</Text>
+        </View>
+      </View >
     </>
   )
 }
 
 
 const styles = StyleSheet.create({
+  topContainer: {
+    padding: 24,
+    display: 'flex',
+    flexDirection: 'row',
+  },
+  container: {
+    marginTop: 20,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  innerContainer: {
+    padding: 24,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#1e1e1d',
+    borderRadius: 25,
+    marginHorizontal: 16,
+  },
   qualityText: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'black',
+    color: 'white',
+    paddingHorizontal: 30,
+    paddingVertical: 7,
+    borderRadius: 100,
   },
-  sleepTimeText: {
+  timeText: {
     fontSize: 18,
+    fontWeight: 'semibold',
+    paddingVertical: 5,
     color: 'black',
   },
   notesContainer: {
@@ -60,5 +111,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'semibold',
     color: '#202320',
+  },
+  containerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+    marginBottom: 24,
   }
 })
