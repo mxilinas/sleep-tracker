@@ -7,7 +7,7 @@ import { useEffect } from 'react';
 import 'react-native-reanimated';
 
 import { useColorScheme } from '@/components/useColorScheme';
-import { initializeDatabase } from '@/db/schema';
+import { initializeDatabase, nukeDatabase } from '@/db/schema';
 import { getDB } from '@/db/database';
 
 export {
@@ -54,6 +54,8 @@ function RootLayoutNav() {
     useEffect(() => {
         (async () => {
             const db = await getDB();
+            // // TODO: remove nuke test
+            // await nukeDatabase(db);
             await initializeDatabase(db);
         })();
     }, [])

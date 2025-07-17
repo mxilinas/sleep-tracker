@@ -13,7 +13,6 @@ import { Platform } from 'react-native';
 import * as Haptics from "expo-haptics";
 import * as Interp from "../utils/interpolation";
 
-
 type NumberWheelProps = {
   containerHeight: number;
   nVisibleNumbers: number,

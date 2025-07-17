@@ -6,9 +6,9 @@ import { getDB } from './database';
 interface CalendarEntryRow {
   id: number;
   date: string;
-  sleepQuality: number;
-  startTime: string;
-  endTime: string;
+  sleep_quality: number;
+  sleep_time_start: string;
+  sleep_time_end: string;
   notes: string;
 }
 
@@ -16,7 +16,7 @@ interface CalendarEntryRow {
 export const insertEntry = async (entry: CalendarEntry) => {
   const db = await getDB();
   await db.runAsync(
-    'INSERT INTO entries (date, sleepQuality, sleepStart, sleepEnd, notes) VALUES (?, ?, ?, ?);',
+    'INSERT INTO entries (date, sleep_quality, sleep_time_start, sleep_time_end, notes) VALUES (?, ?, ?, ?, ?);',
     entry.date.toString(), entry.sleepQuality, entry.sleepTime.startTime.toString(),
     entry.sleepTime.endTime.toString(), entry.notes,
   );
@@ -35,15 +35,15 @@ export const getEntryFromDate = async (date: SimpleDate): Promise<CalendarEntry 
   return calendarEntryFromRow(row);
 }
 
-// Get all CalendarEntrys in the month in 'date'.
+// Get all CalendarEntrys in the month contained in 'date'.
 export const getEntriesInMonth = async (date: SimpleDate): Promise<Array<CalendarEntry | null>> => {
   const db = await getDB();
   const year = date.getYear();
   const month = date.getMonth();
 
   const rows = await db.getAllAsync<CalendarEntryRow>(`
-    SELECT * FROM entries WHERE date LIKE '$-$-%';`,
-    year, month,
+    SELECT * FROM entries WHERE date LIKE ?;`,
+    `${year}-${month}-%`,
   );
 
   let entries = new Array<CalendarEntry | null>(date.getNumDaysInMonth()).fill(null);
@@ -55,10 +55,24 @@ export const getEntriesInMonth = async (date: SimpleDate): Promise<Array<Calenda
   return entries;
 }
 
+// Get all entries in the entries table.
+export const getAllEntries = async () => {
+  const db = await getDB();
+  const rows = await db.getAllAsync<CalendarEntryRow>(`
+    SELECT * FROM entries;`);
+
+  let entries: CalendarEntry[] = [];
+  for (let i = 0; i < rows.length; i++) {
+    entries.push(calendarEntryFromRow(rows[i]));
+  }
+
+  return entries;
+}
+
 // Construct a CalendarEntry from a given row.
 const calendarEntryFromRow = (row: CalendarEntryRow): CalendarEntry => {
   const date = SimpleDate.fromString(row.date);
-  const sleepTime = new TimeRange(Time.fromString(row.startTime), Time.fromString(row.endTime));
+  const sleepTime = new TimeRange(Time.fromString(row.sleep_time_start), Time.fromString(row.sleep_time_end));
 
-  return new CalendarEntry(date, row.sleepQuality, sleepTime, row.notes);
+  return new CalendarEntry(date, row.sleep_quality, sleepTime, row.notes);
 }
