@@ -45,7 +45,6 @@ export const getEntriesInMonth = async (date: SimpleDate): Promise<Array<Calenda
     SELECT * FROM entries WHERE date LIKE ?;`,
     `${year}-${month}-%`,
   );
-  console.log(rows)
 
   let entries = new Array<CalendarEntry | null>(date.getNumDaysInMonth()).fill(null);
   for (let i = 0; i < rows.length; i++) {
@@ -61,7 +60,6 @@ export const getAllEntries = async () => {
   const db = await getDB();
   const rows = await db.getAllAsync<CalendarEntryRow>(`
     SELECT * FROM entries;`);
-  console.log(rows)
 
   let entries: CalendarEntry[] = [];
   for (let i = 0; i < rows.length; i++) {
