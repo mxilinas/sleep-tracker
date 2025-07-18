@@ -40,7 +40,7 @@ export class SimpleDate {
   // Get the total number of days in the current month
   getNumDaysInMonth() {
     // Using 0 as the "day" argument fetches the last day of the previous month
-    return new Date(this.getYear(), this.getMonth() % 12, 0).getDate();
+    return new Date(this.getYear(), (this.getMonth() + 1) % 12, 0).getDate();
   }
 
   // Get the current month as a string
@@ -49,7 +49,7 @@ export class SimpleDate {
       "January", "February", "March", "April", "May", "June",
       "July", "August", "September", "October", "November", "December",
     ]
-    return months[this.getMonth() - 1];
+    return months[this.getMonth()];
   }
 
   // Get the current day
@@ -57,9 +57,9 @@ export class SimpleDate {
     return this.date.getDate();
   }
 
-  // Get the current month index (1 -> Jan, ..., 12 -> Dec)
+  // Get the current month index (0 -> Jan, ..., 11 -> Dec)
   getMonth() {
-    return this.date.getMonth() + 1;
+    return this.date.getMonth();
   }
 
   // Get the current year
@@ -76,7 +76,7 @@ export class SimpleDate {
       "July", "August", "September", "October", "November", "December"
     ];
 
-    return `${monthNames[month - 1]} ${day}, ${year}`;
+    return `${monthNames[month]} ${day}, ${year}`;
   }
 
   toString() {

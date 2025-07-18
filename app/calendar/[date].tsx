@@ -1,8 +1,7 @@
 import { CalendarEntry, SimpleDate, SleepQuality } from '@/components/Calendar';
 import { TileColor } from '@/components/HistoryTile';
-import { Text as StyledText } from '@/components/Themed';
-import { getEntryFromDate } from '@/db/queries';
-import { Stack, useLocalSearchParams, useRouter } from 'expo-router'
+import { getAllEntries, getEntryFromDate } from '@/db/queries';
+import { Stack, useLocalSearchParams } from 'expo-router'
 import { useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
@@ -26,10 +25,14 @@ export default function EntryDetails() {
 
   useEffect(() => {
     (async () => {
-      setEntry(await getEntryFromDate(SimpleDate.fromString(date)));
+      const entryFromDate = await getEntryFromDate(SimpleDate.fromString(date));
+      setEntry(entryFromDate);
     })()
   }, [])
 
+  async function printall() {
+    const entries = await getAllEntries();
+  }
 
   type StringCallback = () => string;
   const entryText = (entry: CalendarEntry | null, callback: StringCallback) => {
@@ -73,6 +76,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   container: {
+    height: "100%",
+    backgroundColor: "white",
     marginTop: 20,
     display: 'flex',
     alignItems: 'center',

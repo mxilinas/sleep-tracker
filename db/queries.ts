@@ -28,6 +28,8 @@ export const getEntryFromDate = async (date: SimpleDate): Promise<CalendarEntry 
   const db = await getDB();
   const row = await db.getFirstAsync<CalendarEntryRow>('SELECT * FROM entries WHERE date = ?;', date.toString());
 
+  console.log(date.toString());
+
   if (row === null) {
     return null;
   }
